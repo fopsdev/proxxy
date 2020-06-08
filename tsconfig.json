@@ -1,16 +1,22 @@
 {
   "compilerOptions": {
     "strict": true,
-    "module": "commonjs",
-    "jsx": "preserve",
+    "module": "es6",
+    "target": "es6",
     "esModuleInterop": true,
     "sourceMap": true,
     "allowJs": true,
-    "lib": [
-      "es6",
-      "dom"
-    ],
+    "lib": ["es6", "dom"],
     "rootDir": "src",
     "moduleResolution": "node"
-  }
+  },
+  "exclude": [
+    "_patched_node_modules",
+    "updateCheck",
+    "node_modules",
+    "dist",
+    "service-worker.js",
+    "initscript.js",
+    "tracker/proxyHandler.js"
+  ]
 }

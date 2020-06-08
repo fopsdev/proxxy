@@ -7,12 +7,20 @@
     "start": "parcel index.html --open",
     "build": "parcel build index.html"
   },
-  "dependencies": {},
+  "dependencies": {
+    "lit-html": "^1.2.1"
+  },
   "devDependencies": {
-    "parcel-bundler": "^1.6.1"
+    "parcel-bundler": "^1.12.4",
+    "typescript": "^3.9.5"
   },
   "keywords": [
     "typescript",
     "javascript"
+  ],
+  "browserslist": [
+    "last 1 Chrome versions",
+    "last 1 Edge versions",
+    "last 1 Firefox versions"
   ]
 }
