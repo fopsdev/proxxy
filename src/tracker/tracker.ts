@@ -1,8 +1,8 @@
 import { OvlBaseElement } from "../components/baseElement"
 
-export const callbacks = new Map()
+export let callbacks = new Map()
 
-export const activeCallbacks: OvlBaseElement[] = []
+export let activeCallbacks: OvlBaseElement[] = []
 
 export const startTrack = (cb: OvlBaseElement) => {
   callbacks.set(cb, new Set())
@@ -10,7 +10,9 @@ export const startTrack = (cb: OvlBaseElement) => {
 }
 
 export const stopTrack = () => {
+  console.log(activeCallbacks.length)
   activeCallbacks.pop()
+  console.log(activeCallbacks.length)
 }
 
 export const disposeTrack = (cb: OvlBaseElement) => {

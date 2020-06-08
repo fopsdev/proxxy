@@ -13,7 +13,7 @@ export class OvlBaseElement extends HTMLElement {
   _id: number = 0
   static _counter: number = 0
 
-  async getUI(): Promise<TemplateResult | undefined> {
+  async getUI(): Promise<TemplateResult[] | TemplateResult | undefined> {
     return undefined
   }
   init() {
@@ -31,18 +31,24 @@ export class OvlBaseElement extends HTMLElement {
     startTrack(this)
     let res = await this.getUI()
     render(res, this)
-    stopTrack()
+    if (res instanceof Promise) {
+      // res.then((t) => {
+      startTrack(this)
+      // })
+    } else {
+      stopTrack()
+    }
     logTrackingList()
   }
 
-  async connectedCallback() {
+  connectedCallback() {
     startTrack(this)
     this.init()
     stopTrack()
-    await this.doRender()
+    this.doRender()
   }
 
-  async disconnectedCallback() {
+  disconnectedCallback() {
     disposeTrack(this)
   }
 }

@@ -1,9 +1,15 @@
 import { createDeepProxy } from "./tracker/proxyHandler"
 import { OvlMain } from "./components/main"
 import { OvlTable } from "./components/table"
+import { OvlTable2 } from "./components/table2"
+import { OvlRow } from "./components/rows"
+import { OvlInfo } from "./components/info"
 import { render, html } from "lit-html"
 customElements.define("ovl-main", OvlMain)
 customElements.define("ovl-table", OvlTable)
+customElements.define("ovl-table2", OvlTable2)
+customElements.define("ovl-row", OvlRow)
+customElements.define("ovl-info", OvlInfo)
 
 let state_1 = {
   app: {
@@ -18,7 +24,28 @@ let state_1 = {
         3: { id: 3, col1: "Test3", col2: 11.3 },
         4: { id: 4, col1: "Test4", col2: 11.4 },
         5: { id: 5, col1: "Test5", col2: 11.5 },
+        6: { id: 1, col1: "Test1", col2: 11.1 },
+        7: { id: 2, col1: "Test2", col2: 11.2 },
+        8: { id: 3, col1: "Test3", col2: 11.3 },
+        9: { id: 4, col1: "Test4", col2: 11.4 },
+        10: { id: 5, col1: "Test5", col2: 11.5 },
+        11: { id: 1, col1: "Test1", col2: 11.1 },
+        12: { id: 2, col1: "Test2", col2: 11.2 },
+        13: { id: 3, col1: "Test3", col2: 11.3 },
+        14: { id: 4, col1: "Test4", col2: 11.4 },
+        15: { id: 5, col1: "Test5", col2: 11.5 },
+        16: { id: 1, col1: "Test1", col2: 11.1 },
+        20: { id: 2, col1: "Test2", col2: 11.2 },
+        30: { id: 3, col1: "Test3", col2: 11.3 },
+        40: { id: 4, col1: "Test4", col2: 11.4 },
+        50: { id: 5, col1: "Test5", col2: 11.5 },
+        100: { id: 1, col1: "Test1", col2: 11.1 },
+        200: { id: 2, col1: "Test2", col2: 11.2 },
+        300: { id: 3, col1: "Test3", col2: 11.3 },
+        400: { id: 4, col1: "Test4", col2: 11.4 },
+        500: { id: 5, col1: "Test5", col2: 11.5 },
       },
+      rowsToShow: [1, 10, 50, 500],
     },
   },
 }

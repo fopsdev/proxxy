@@ -1,4 +1,4 @@
-import { callbacks, activeCallbacks } from "./tracker"
+import * as tracker from "./tracker"
 export function createDeepProxy(target) {
   const preproxy = new WeakMap()
   let callbacksToCall = new Set()
@@ -9,44 +9,42 @@ export function createDeepProxy(target) {
         //console.log(key)
         let value = target[key]
         //console.log(value)
-        let activeCbLength = activeCallbacks.length
+        let activeCbLength = tracker.activeCallbacks.length
         if (activeCbLength > 0) {
           if (
             typeof value !== "function" &&
             !(
               Array.isArray(target) &&
-              "length;push;pop;splice;".indexOf(key) > -1
+              "length;push;pop;splice;unshift;shift".indexOf(key) > -1
             ) &&
             key !== "toJSON"
           ) {
-            let cb = activeCallbacks[activeCbLength - 1]
-            callbacks.get(cb).add([...path, key].join("."))
+            let cb = tracker.activeCallbacks[activeCbLength - 1]
+            tracker.callbacks.get(cb).add([...path, key].join("."))
           }
         }
-        return value
+        return Reflect.get(...arguments)
       },
       // traps the Object.keys(...)
       ownKeys(target) {
-        let activeCbLength = activeCallbacks.length
+        let activeCbLength = tracker.activeCallbacks.length
         if (activeCbLength > 0) {
-          let cb = activeCallbacks[activeCbLength - 1]
+          let cb = tracker.activeCallbacks[activeCbLength - 1]
           Object.keys(target).map((m) => {
-            callbacks.get(cb).add([...path, m].join("."))
+            tracker.callbacks.get(cb).add([...path, m].join("."))
           })
           return Reflect.ownKeys(target)
         }
       },
-      // traps "id" in coloumns  (in operator)
+      // traps (in operator)
       has(target, key) {
-        console.log("target")
-        console.log(target)
-        let activeCbLength = activeCallbacks.length
+        let activeCbLength = tracker.activeCallbacks.length
         if (activeCbLength > 0) {
-          let cb = activeCallbacks[activeCbLength - 1]
+          let cb = tracker.activeCallbacks[activeCbLength - 1]
           Object.keys(target).map((m) => {
-            callbacks.get(cb).add([...path, m].join("."))
+            tracker.callbacks.get(cb).add([...path, m].join("."))
           })
-          return key in target
+          return Reflect.has(...arguments)
         }
       },
 
@@ -55,9 +53,13 @@ export function createDeepProxy(target) {
           value = proxify(value, [...path, key])
         }
         target[key] = value
-        if (!(Array.isArray(target) && "length;".indexOf(key) > -1)) {
+        let isArray = Array.isArray(target)
+        if (!isArray) {
           checkForUpdate([...path, key].join("."))
+        } else if (isArray && "length;".indexOf(key) === -1) {
+          checkForUpdate([...path].join("."))
         }
+
         return true
       },
 
@@ -102,8 +104,10 @@ export function createDeepProxy(target) {
   }
 
   function checkForUpdate(path) {
-    callbacks.forEach((value, key) => {
-      //console.log(path)
+    // if (!callbacksToCall.length) {
+    //   tracker.activeCallbacks = []
+    // }
+    tracker.callbacks.forEach((value, key) => {
       if (value.has(path)) {
         callbacksToCall.add(key)
         if (!requestAnimationFrameStarted) {
@@ -116,11 +120,13 @@ export function createDeepProxy(target) {
   }
   function callCallbacks() {
     // call onUpdate method of affected component
+
     callbacksToCall.forEach(async (k) => {
-      debugger
       await k.doRender()
     })
+
     callbacksToCall = new Set()
+
     window.requestAnimationFrame(callCallbacks)
   }
   return proxify(target, [])
