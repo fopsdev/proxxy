@@ -1,18 +1,18 @@
 import { OvlBaseElement } from "../components/baseElement"
 export let callbacks = new Map()
 export let paths = new Map()
-export let activeCallbacks: OvlBaseElement[] = []
+export let activeCallback: OvlBaseElement | undefined
 
 export const startTrack = (cb: OvlBaseElement) => {
   let cbToCheck = callbacks.get(cb)
   if (!cbToCheck) {
     callbacks.set(cb, new Set())
   }
-  activeCallbacks.push(cb)
+  activeCallback = cb
 }
 
 export const stopTrack = () => {
-  activeCallbacks.pop()
+  activeCallback = undefined
 }
 
 export const disposeTrack = (cb: OvlBaseElement) => {
@@ -34,14 +34,13 @@ export const logTrackingList = () => {
 }
 
 export const isTracking = () => {
-  return activeCallbacks.length > 0
+  return activeCallback !== undefined
 }
 
 export const addTrackedPath = (path: string) => {
-  let cb = activeCallbacks[activeCallbacks.length - 1]
-  callbacks.get(cb).add(path)
+  callbacks.get(activeCallback).add(path)
   if (!paths.has(path)) {
     paths.set(path, new Set())
   }
-  paths.get(path).add(cb)
+  paths.get(path).add(activeCallback)
 }
