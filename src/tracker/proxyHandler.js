@@ -6,7 +6,10 @@ export function createDeepProxy(target) {
     return {
       get(target, key, receiver) {
         let value = target[key]
-
+        // console.log(path.toString() + " key:" + key.toString())
+        // if (key == 3) {
+        //   debugger
+        // }
         if (isTracking()) {
           let isArray = Array.isArray(target)
           if (
@@ -110,10 +113,13 @@ export function createDeepProxy(target) {
   }
 
   function checkForCallbacks(path) {
+    console.log("tracked mutation on: " + path)
     let cbs = paths.get(path)
     if (cbs) {
       let freshQueueToRender = callbacksToCall.size === 0
+      console.log("update will be called on:")
       cbs.forEach((key) => {
+        console.log(key)
         callbacksToCall.add(key)
       })
       if (freshQueueToRender) {

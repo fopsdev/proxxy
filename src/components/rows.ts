@@ -11,6 +11,7 @@ export class OvlRow extends OvlBaseElement {
       }, ms)
     )
   async getUI() {
+    console.log("row render")
     let row = this.row as {
       currentKey: string
       rowData: { [key: string]: {} }
@@ -21,6 +22,7 @@ export class OvlRow extends OvlBaseElement {
     let res1 = this.track(() => {
       let info = html` <ovl-info></ovl-info> `
       chk = row.rowArray[2]
+      row.rowArray.length
       return info
     })
     await this.delay(Math.floor(Math.random() * 2000))

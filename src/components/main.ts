@@ -14,11 +14,11 @@ export class OvlMain extends OvlBaseElement {
   }
 
   addRow6() {
-    this.state.portal.table.rowsToShow.push(6)
-    this.state.app.val2 = new Date().getMilliseconds().toString()
-    setTimeout(() => {
-      this.state.portal.table.rowsToShow[2] = 100
-    }, 5000)
+    //this.state.portal.table.rowsToShow = [1, 2, 3]
+    //this.state.app.val2 = new Date().getMilliseconds().toString()
+    //setTimeout(() => {
+    this.state.portal.table.rowsToShow[1] = 100
+    //}, 5000)
   }
   async getUI() {
     return this.track(() => {
