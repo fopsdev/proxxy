@@ -11,10 +11,12 @@ export class OvlInfo extends OvlBaseElement {
     )
 
   async getUI() {
+    let res1 = this.track(() => {
+      return this.state.app.val2 + "lala"
+    })
     await this.delay(Math.floor(Math.random() * 5000))
-    startTrack(this)
-    let res = html`${this.state.app.val2}`
-    stopTrack()
-    return res
+    return this.track(() => {
+      return html`Original:${this.state.app.val2} Modified: ${res1}`
+    })
   }
 }

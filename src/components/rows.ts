@@ -12,20 +12,24 @@ export class OvlRow extends OvlBaseElement {
       }, ms)
     )
   async getUI() {
-    let row = <{ currentKey: string; rowData: { [key: string]: {} } }>this.row
-
-    let info = html`<ovl-info></ovl-info>`
-    let chk = row.rowArray[2] //html`${row.rowArray[2]}`
-
-    await this.delay(Math.floor(Math.random() * 2000))
-    startTrack(this)
-    let res = Object.keys(row.rowData).map((k) => {
-      return html`<td>${row.rowData[k]}</td> `
+    let row = <
+      { currentKey: string; rowData: { [key: string]: {} }; rowArray: number[] }
+    >this.row
+    let chk
+    let res1 = this.track(() => {
+      let info = html`<ovl-info></ovl-info>`
+      chk = row.rowArray[2]
+      return info
     })
-    stopTrack()
+    await this.delay(Math.floor(Math.random() * 2000))
+    let res = this.track(() => {
+      return Object.keys(row.rowData).map((k) => {
+        return html`<td>${row.rowData[k]}</td> `
+      })
+    })
     return html`${res}
       <tr>
-        ${info} ${chk}
+        ${res1} ${chk}
       </tr> `
   }
 }

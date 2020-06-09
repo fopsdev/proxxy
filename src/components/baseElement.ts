@@ -20,6 +20,13 @@ export class OvlBaseElement extends HTMLElement {
     // use it for getting data from parent, ...
   }
 
+  track(fn: () => any) {
+    startTrack(this)
+    let res = fn()
+    stopTrack()
+    return res
+  }
+
   constructor() {
     super()
     this._id = ++OvlBaseElement._counter
@@ -28,17 +35,13 @@ export class OvlBaseElement extends HTMLElement {
   }
 
   async doRender() {
-    startTrack(this)
     let res = await this.getUI()
-    stopTrack()
     render(res, this)
     logTrackingList()
   }
 
   connectedCallback() {
-    startTrack(this)
     this.init()
-    stopTrack()
     this.doRender()
   }
 

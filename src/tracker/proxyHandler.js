@@ -16,7 +16,7 @@ export function createDeepProxy(target) {
             key !== "toJSON"
           ) {
             let pathToTrack
-            if (isArray && key === "length") {
+            if (isArray && (key === "length" || !key)) {
               pathToTrack = [...path].join(".")
             } else {
               pathToTrack = [...path, key].join(".")
@@ -56,10 +56,18 @@ export function createDeepProxy(target) {
         }
         target[key] = value
         let isArray = Array.isArray(target)
+        let pathToTrack
         if (!isArray) {
-          checkForUpdate([...path, key].join("."))
-        } else if (isArray && "length;".indexOf(key) === -1) {
-          checkForUpdate([...path].join("."))
+          pathToTrack = [...path, key].join(".")
+        } else if (isArray && (key === "length" || !key)) {
+          pathToTrack = [...path].join(".")
+        } else if (isArray) {
+          pathToTrack = [...path, key].join(".")
+        }
+
+        console.log(pathToTrack)
+        if (pathToTrack) {
+          checkForCallbacks(pathToTrack)
         }
         return true
       },
@@ -69,7 +77,7 @@ export function createDeepProxy(target) {
           unproxy(target, key)
           let deleted = Reflect.deleteProperty(target, key)
           if (deleted && handler.deleteProperty) {
-            checkForUpdate([...path, key].join("."))
+            checkForCallbacks([...path, key].join("."))
           }
           return deleted
         }
@@ -104,7 +112,7 @@ export function createDeepProxy(target) {
     return p
   }
 
-  function checkForUpdate(path) {
+  function checkForCallbacks(path) {
     let cbs = paths.get(path)
     if (cbs) {
       cbs.forEach((key) => {

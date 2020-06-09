@@ -3,32 +3,28 @@ import { html } from "lit-html"
 
 export class OvlMain extends OvlBaseElement {
   addRow6() {
+    console.log("hurray")
     this.state.portal.table.rowsToShow.push(6)
-    //this.state.portal.table.rowsToShow[2] = 100
-    //this.state.portal.table.rowsToShow[2] = 100
-    setTimeout(() => {
-      this.state.app.val2 = new Date().getMilliseconds().toString()
-    }, 10000)
-
+    this.state.app.val2 = new Date().getMilliseconds().toString()
     setTimeout(() => {
       this.state.portal.table.rowsToShow[2] = 100
-    }, 20000)
+    }, 5000)
   }
   async getUI() {
-    let info
+    return this.track(() => {
+      let info
+      info = html`<ovl-info></ovl-info>`
+      return html`${this.state.app.val1}
+        <div>
+          <button @click=${() => this.addRow6()}>Add Row 6</button>
+        </div>
 
-    info = html`<ovl-info></ovl-info>`
-
-    return html`${this.state.app.val1}
-      <div>
-        <button @click=${() => this.addRow6()}>Add Row 6</button>
-      </div>
-
-      <br />
-      ${info}
-      <br />
-      <ovl-table .table=${this.state.portal.table}></ovl-table>
-      <br />
-      <ovl-table2 .table=${this.state.portal.table}></ovl-table2>`
+        <br />
+        ${info}
+        <br />
+        <ovl-table .table=${this.state.portal.table}></ovl-table>
+        <br />
+        <ovl-table2 .table=${this.state.portal.table}></ovl-table2>`
+    })
   }
 }
