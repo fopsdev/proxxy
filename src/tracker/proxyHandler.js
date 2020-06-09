@@ -1,4 +1,4 @@
-import { getActiveTracker, callbacks } from "./tracker"
+import { paths, isTracking, addTrackedPath } from "./tracker"
 export function createDeepProxy(target) {
   const preproxy = new WeakMap()
   let callbacksToCall = new Set()
@@ -7,41 +7,47 @@ export function createDeepProxy(target) {
     return {
       get(target, key, receiver) {
         let value = target[key]
-        let activeTracker = getActiveTracker()
-        if (activeTracker) {
+
+        if (isTracking()) {
+          let isArray = Array.isArray(target)
           if (
             typeof value !== "function" &&
-            !(
-              Array.isArray(target) &&
-              "length;push;pop;splice;unshift;shift".indexOf(key) > -1
-            ) &&
+            !(isArray && "push;pop;splice;unshift;shift".indexOf(key) > -1) &&
             key !== "toJSON"
           ) {
-            activeTracker.add([...path, key].join("."))
+            let pathToTrack
+            if (isArray && key === "length") {
+              pathToTrack = [...path].join(".")
+            } else {
+              pathToTrack = [...path, key].join(".")
+            }
+            addTrackedPath(pathToTrack)
           }
         }
         return Reflect.get(...arguments)
       },
       // traps the Object.keys(...)
       ownKeys(target) {
-        let activeTracker = getActiveTracker()
-        if (activeTracker) {
-          let ownKeys = Reflect.ownKeys(target)
+        let ownKeys = Reflect.ownKeys(target)
+        if (isTracking()) {
           ownKeys.map((m) => {
-            activeTracker.add([...path, m].join("."))
+            let pathToTrack = [...path, m].join(".")
+            addTrackedPath(pathToTrack)
           })
-          return ownKeys
         }
+        return ownKeys
       },
       // traps (in operator)
       has(target, key) {
-        let activeTracker = getActiveTracker()
-        if (activeTracker) {
-          Reflect.ownKeys(target).map((m) => {
-            activeTracker.add([...path, m].join("."))
-          })
-          return Reflect.has(...arguments)
+        if (isTracking) {
+          if (!Array.isArray(target)) {
+            Reflect.ownKeys(target).map((m) => {
+              let pathToTrack = [...path, m].join(".")
+              addTrackedPath(pathToTrack)
+            })
+          }
         }
+        return Reflect.has(...arguments)
       },
 
       set(target, key, value, receiver) {
@@ -99,22 +105,22 @@ export function createDeepProxy(target) {
   }
 
   function checkForUpdate(path) {
-    callbacks.forEach((value, key) => {
-      if (value.has(path)) {
+    let cbs = paths.get(path)
+    if (cbs) {
+      cbs.forEach((key) => {
         callbacksToCall.add(key)
-        if (requestAnimationFrameIdle) {
-          window.requestAnimationFrame(callCallbacks)
-          requestAnimationFrameIdle = false
-        }
-        value.delete(path)
+      })
+      if (requestAnimationFrameIdle) {
+        window.requestAnimationFrame(callCallbacks)
+        requestAnimationFrameIdle = false
       }
-    })
+    }
   }
   function callCallbacks() {
     // call onUpdate method of affected component
     if (callbacksToCall.size > 0) {
       callbacksToCall.forEach(async (k) => {
-        await k.doRender()
+        k.doRender()
       })
       callbacksToCall = new Set()
     }

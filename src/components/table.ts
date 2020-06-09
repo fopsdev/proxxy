@@ -19,7 +19,13 @@ export class OvlTable extends OvlBaseElement {
       //@ts-ignore
       let rowData = table.data[k]
       return html`<tr>
-        <ovl-row .row=${{ currentKey: k, rowData }}></ovl-row>
+        <ovl-row
+          .row=${{
+            currentKey: k,
+            rowData,
+            rowArray: this.state.portal.table.rowsToShow,
+          }}
+        ></ovl-row>
       </tr>`
     })
 

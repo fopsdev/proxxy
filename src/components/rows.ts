@@ -15,6 +15,8 @@ export class OvlRow extends OvlBaseElement {
     let row = <{ currentKey: string; rowData: { [key: string]: {} } }>this.row
 
     let info = html`<ovl-info></ovl-info>`
+    let chk = row.rowArray[2] //html`${row.rowArray[2]}`
+
     await this.delay(Math.floor(Math.random() * 2000))
     startTrack(this)
     let res = Object.keys(row.rowData).map((k) => {
@@ -23,7 +25,7 @@ export class OvlRow extends OvlBaseElement {
     stopTrack()
     return html`${res}
       <tr>
-        ${info}
+        ${info} ${chk}
       </tr> `
   }
 }

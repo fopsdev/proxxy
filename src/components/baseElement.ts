@@ -30,14 +30,8 @@ export class OvlBaseElement extends HTMLElement {
   async doRender() {
     startTrack(this)
     let res = await this.getUI()
+    stopTrack()
     render(res, this)
-    if (res instanceof Promise) {
-      // res.then((t) => {
-      startTrack(this)
-      // })
-    } else {
-      stopTrack()
-    }
     logTrackingList()
   }
 

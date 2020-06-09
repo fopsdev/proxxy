@@ -4,9 +4,15 @@ import { html } from "lit-html"
 export class OvlMain extends OvlBaseElement {
   addRow6() {
     this.state.portal.table.rowsToShow.push(6)
+    //this.state.portal.table.rowsToShow[2] = 100
+    //this.state.portal.table.rowsToShow[2] = 100
     setTimeout(() => {
       this.state.app.val2 = new Date().getMilliseconds().toString()
     }, 10000)
+
+    setTimeout(() => {
+      this.state.portal.table.rowsToShow[2] = 100
+    }, 20000)
   }
   async getUI() {
     let info

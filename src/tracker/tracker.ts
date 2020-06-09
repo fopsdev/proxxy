@@ -1,33 +1,47 @@
 import { OvlBaseElement } from "../components/baseElement"
-
 export let callbacks = new Map()
-
+export let paths = new Map()
 export let activeCallbacks: OvlBaseElement[] = []
 
 export const startTrack = (cb: OvlBaseElement) => {
-  callbacks.set(cb, new Set())
+  let cbToCheck = callbacks.get(cb)
+  if (!cbToCheck) {
+    callbacks.set(cb, new Set())
+  }
   activeCallbacks.push(cb)
 }
 
 export const stopTrack = () => {
-  console.log(activeCallbacks.length)
   activeCallbacks.pop()
-  console.log(activeCallbacks.length)
 }
 
 export const disposeTrack = (cb: OvlBaseElement) => {
+  // get all paths and remove from there as well
+  callbacks.get(cb).forEach((path: string) => {
+    let pathsCallbackSet = paths.get(path)
+    pathsCallbackSet.delete(cb)
+    if (pathsCallbackSet.size === 0) {
+      paths.delete(path)
+    }
+  })
   callbacks.delete(cb)
 }
 
 export const logTrackingList = () => {
   console.log("tracking list")
-  console.dir(callbacks)
+  console.log(callbacks)
+  console.log(paths)
 }
 
-export const getActiveTracker = () => {
-  if (activeCallbacks.length > 0) {
-    return callbacks.get(activeCallbacks[activeCallbacks.length - 1])
-  } else {
-    return undefined
+export const isTracking = () => {
+  return activeCallbacks.length > 0
+}
+
+export const addTrackedPath = (path: string) => {
+  let cb = activeCallbacks[activeCallbacks.length - 1]
+  callbacks.get(cb).add(path)
+  if (!paths.has(path)) {
+    paths.set(path, new Set())
   }
+  paths.get(path).add(cb)
 }
