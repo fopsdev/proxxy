@@ -37,7 +37,6 @@ export class OvlBaseElement extends HTMLElement {
   async doRender() {
     let res = await this.getUI()
     render(res, this)
-    logTrackingList()
   }
 
   connectedCallback() {
