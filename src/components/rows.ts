@@ -5,7 +5,7 @@ import { callbacks, stopTrack, startTrack } from "../tracker/tracker"
 export class OvlRow extends OvlBaseElement {
   props: any
   row: any
-  delay = (ms) =>
+  delay = (ms: number) =>
     new Promise((res) =>
       setTimeout(() => {
         res()

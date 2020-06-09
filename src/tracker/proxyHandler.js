@@ -2,7 +2,6 @@ import { paths, isTracking, addTrackedPath } from "./tracker"
 export function createDeepProxy(target) {
   const preproxy = new WeakMap()
   let callbacksToCall = new Set()
-  let requestAnimationFrameIdle = true
   function makeHandler(path) {
     return {
       get(target, key, receiver) {
@@ -16,7 +15,7 @@ export function createDeepProxy(target) {
             key !== "toJSON"
           ) {
             let pathToTrack
-            if (isArray && (key === "length" || !key)) {
+            if (isArray && key === "length") {
               pathToTrack = [...path].join(".")
             } else {
               pathToTrack = [...path, key].join(".")
@@ -59,13 +58,11 @@ export function createDeepProxy(target) {
         let pathToTrack
         if (!isArray) {
           pathToTrack = [...path, key].join(".")
-        } else if (isArray && (key === "length" || !key)) {
+        } else if (isArray && key === "length") {
           pathToTrack = [...path].join(".")
         } else if (isArray) {
           pathToTrack = [...path, key].join(".")
         }
-
-        console.log(pathToTrack)
         if (pathToTrack) {
           checkForCallbacks(pathToTrack)
         }
@@ -118,10 +115,7 @@ export function createDeepProxy(target) {
       cbs.forEach((key) => {
         callbacksToCall.add(key)
       })
-      if (requestAnimationFrameIdle) {
-        window.requestAnimationFrame(callCallbacks)
-        requestAnimationFrameIdle = false
-      }
+      window.requestAnimationFrame(callCallbacks)
     }
   }
   function callCallbacks() {
@@ -132,7 +126,6 @@ export function createDeepProxy(target) {
       })
       callbacksToCall = new Set()
     }
-    requestAnimationFrameIdle = true
   }
   return proxify(target, [])
 }
