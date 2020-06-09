@@ -3,7 +3,7 @@ import { html } from "lit-html"
 import { startTrack, stopTrack } from "../tracker/tracker"
 
 export class OvlInfo extends OvlBaseElement {
-  delay = (ms) =>
+  delay = (ms: number) =>
     new Promise((res) =>
       setTimeout(() => {
         res()
