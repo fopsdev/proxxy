@@ -14,14 +14,15 @@ export class OvlMain extends OvlBaseElement {
     info = html`<ovl-info></ovl-info>`
 
     return html`${this.state.app.val1}
+      <div>
+        <button @click=${() => this.addRow6()}>Add Row 6</button>
+      </div>
+
       <br />
       ${info}
       <br />
       <ovl-table .table=${this.state.portal.table}></ovl-table>
       <br />
-      <ovl-table2 .table=${this.state.portal.table}></ovl-table2>
-      <div>
-        <button @click=${() => this.addRow6()}>Add Row 6</button>
-      </div>`
+      <ovl-table2 .table=${this.state.portal.table}></ovl-table2>`
   }
 }

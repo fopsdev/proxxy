@@ -1,16 +1,14 @@
-import * as tracker from "./tracker"
+import { getActiveTracker, callbacks } from "./tracker"
 export function createDeepProxy(target) {
   const preproxy = new WeakMap()
   let callbacksToCall = new Set()
-  let requestAnimationFrameStarted = false
+  let requestAnimationFrameIdle = true
   function makeHandler(path) {
     return {
       get(target, key, receiver) {
-        //console.log(key)
         let value = target[key]
-        //console.log(value)
-        let activeCbLength = tracker.activeCallbacks.length
-        if (activeCbLength > 0) {
+        let activeTracker = getActiveTracker()
+        if (activeTracker) {
           if (
             typeof value !== "function" &&
             !(
@@ -19,30 +17,28 @@ export function createDeepProxy(target) {
             ) &&
             key !== "toJSON"
           ) {
-            let cb = tracker.activeCallbacks[activeCbLength - 1]
-            tracker.callbacks.get(cb).add([...path, key].join("."))
+            activeTracker.add([...path, key].join("."))
           }
         }
         return Reflect.get(...arguments)
       },
       // traps the Object.keys(...)
       ownKeys(target) {
-        let activeCbLength = tracker.activeCallbacks.length
-        if (activeCbLength > 0) {
-          let cb = tracker.activeCallbacks[activeCbLength - 1]
-          Object.keys(target).map((m) => {
-            tracker.callbacks.get(cb).add([...path, m].join("."))
+        let activeTracker = getActiveTracker()
+        if (activeTracker) {
+          let ownKeys = Reflect.ownKeys(target)
+          ownKeys.map((m) => {
+            activeTracker.add([...path, m].join("."))
           })
-          return Reflect.ownKeys(target)
+          return ownKeys
         }
       },
       // traps (in operator)
       has(target, key) {
-        let activeCbLength = tracker.activeCallbacks.length
-        if (activeCbLength > 0) {
-          let cb = tracker.activeCallbacks[activeCbLength - 1]
-          Object.keys(target).map((m) => {
-            tracker.callbacks.get(cb).add([...path, m].join("."))
+        let activeTracker = getActiveTracker()
+        if (activeTracker) {
+          Reflect.ownKeys(target).map((m) => {
+            activeTracker.add([...path, m].join("."))
           })
           return Reflect.has(...arguments)
         }
@@ -59,7 +55,6 @@ export function createDeepProxy(target) {
         } else if (isArray && "length;".indexOf(key) === -1) {
           checkForUpdate([...path].join("."))
         }
-
         return true
       },
 
@@ -104,15 +99,12 @@ export function createDeepProxy(target) {
   }
 
   function checkForUpdate(path) {
-    // if (!callbacksToCall.length) {
-    //   tracker.activeCallbacks = []
-    // }
-    tracker.callbacks.forEach((value, key) => {
+    callbacks.forEach((value, key) => {
       if (value.has(path)) {
         callbacksToCall.add(key)
-        if (!requestAnimationFrameStarted) {
+        if (requestAnimationFrameIdle) {
           window.requestAnimationFrame(callCallbacks)
-          requestAnimationFrameStarted = true
+          requestAnimationFrameIdle = false
         }
         value.delete(path)
       }
@@ -120,14 +112,13 @@ export function createDeepProxy(target) {
   }
   function callCallbacks() {
     // call onUpdate method of affected component
-
-    callbacksToCall.forEach(async (k) => {
-      await k.doRender()
-    })
-
-    callbacksToCall = new Set()
-
-    window.requestAnimationFrame(callCallbacks)
+    if (callbacksToCall.size > 0) {
+      callbacksToCall.forEach(async (k) => {
+        await k.doRender()
+      })
+      callbacksToCall = new Set()
+    }
+    requestAnimationFrameIdle = true
   }
   return proxify(target, [])
 }

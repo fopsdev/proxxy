@@ -23,3 +23,11 @@ export const logTrackingList = () => {
   console.log("tracking list")
   console.dir(callbacks)
 }
+
+export const getActiveTracker = () => {
+  if (activeCallbacks.length > 0) {
+    return callbacks.get(activeCallbacks[activeCallbacks.length - 1])
+  } else {
+    return undefined
+  }
+}
