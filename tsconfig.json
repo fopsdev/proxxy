@@ -15,8 +15,6 @@
     "updateCheck",
     "node_modules",
     "dist",
-    "service-worker.js",
-    "initscript.js",
-    "tracker/proxyHandler.js"
+    "**/*.js"
   ]
 }

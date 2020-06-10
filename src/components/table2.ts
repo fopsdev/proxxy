@@ -7,9 +7,10 @@ export class OvlTable2 extends OvlBaseElement {
   props: any
   table: any
   async getUI() {
-    console.log("table2 render")
     return this.track(() => {
       let table = this.table as typeof state.portal.table
+      console.log("array at this stage:")
+      console.log(table.rowsToShow)
       let columnHeaders
       columnHeaders = Object.keys(table.data[1]).map((k) => {
         return html` <th>${k}</th> `
@@ -26,7 +27,9 @@ export class OvlTable2 extends OvlBaseElement {
           return html`
             <ovl-row
               style="display: table-row;"
-              .row=${{ currentKey: k, rowData, rowArray: table.rowsToShow }}
+              .props=${() => {
+                return { currentKey: k, rowData, rowArray: table.rowsToShow }
+              }}
             ></ovl-row>
           `
         },

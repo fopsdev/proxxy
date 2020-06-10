@@ -15,9 +15,19 @@ export class OvlMain extends OvlBaseElement {
 
   addRow6() {
     //this.state.portal.table.rowsToShow = [1, 2, 3]
+
+    /* DONT DO THAT, it will assign a new ref to array without beeing trapped by the proxy
+    let arr = this.state.portal.table.rowsToShow
+    arr = [1, 2, 3]
+    */
+    /* instead use a parent so the set proxy will be called and we need no workaround */
+
+    let table = this.state.portal.table
+    table.rowsToShow[1] = 500
+
     //this.state.app.val2 = new Date().getMilliseconds().toString()
     //setTimeout(() => {
-    this.state.portal.table.rowsToShow[1] = 100
+    //this.state.portal.table.rowsToShow[2] = 100
     //}, 5000)
   }
   async getUI() {

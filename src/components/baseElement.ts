@@ -35,6 +35,7 @@ export class OvlBaseElement extends HTMLElement {
   }
 
   async doRender() {
+    console.log("render " + this.name)
     let res = await this.getUI()
     render(res, this)
   }

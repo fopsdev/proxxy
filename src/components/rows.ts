@@ -3,7 +3,6 @@ import { html } from "lit-html"
 
 export class OvlRow extends OvlBaseElement {
   props: any
-  row: any
   delay = (ms: number) =>
     new Promise((res) =>
       setTimeout(() => {
@@ -11,18 +10,21 @@ export class OvlRow extends OvlBaseElement {
       }, ms)
     )
   async getUI() {
-    console.log("row render")
-    let row = this.row as {
+    let row = this.props() as {
       currentKey: string
       rowData: { [key: string]: {} }
       rowArray: number[]
     }
+    console.log("rowArray[2]:")
+    console.log(row.rowArray[2])
 
     let chk
     let res1 = this.track(() => {
       let info = html` <ovl-info></ovl-info> `
-      chk = row.rowArray[2]
-      row.rowArray.length
+      chk = html`<b>${row.rowArray[2]}</b>`
+      // console.log(row.rowArray)
+      // console.log(row.rowArray[2])
+
       return info
     })
     await this.delay(Math.floor(Math.random() * 2000))
@@ -31,11 +33,6 @@ export class OvlRow extends OvlBaseElement {
         return html` <td>${row.rowData[k]}</td> `
       })
     })
-    return html`
-      ${res}
-      <tr>
-        ${res1} ${chk}
-      </tr>
-    `
+    return html` ${this.name} ${res} ${res1} ${chk} `
   }
 }

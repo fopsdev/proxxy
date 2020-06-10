@@ -5,13 +5,13 @@ export function createDeepProxy(target) {
   function makeHandler(path) {
     return {
       get(target, key, receiver) {
-        let value = target[key]
         // console.log(path.toString() + " key:" + key.toString())
         // if (key == 3) {
         //   debugger
         // }
         if (isTracking()) {
           let isArray = Array.isArray(target)
+          let value = target[key]
           if (
             typeof value !== "function" &&
             !(isArray && "push;pop;splice;unshift;shift".indexOf(key) > -1) &&
@@ -51,8 +51,8 @@ export function createDeepProxy(target) {
         }
         return Reflect.has(...arguments)
       },
-
       set(target, key, value, receiver) {
+        debugger
         if (typeof value === "object") {
           value = proxify(value, [...path, key])
         }
@@ -119,7 +119,7 @@ export function createDeepProxy(target) {
       let freshQueueToRender = callbacksToCall.size === 0
       console.log("update will be called on:")
       cbs.forEach((key) => {
-        console.log(key)
+        console.log(key.name)
         callbacksToCall.add(key)
       })
       if (freshQueueToRender) {
